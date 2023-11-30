@@ -6,21 +6,31 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth } from "./firebaseConfig";
+import { app, auth, getUserExpenses } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
   initialized: false,
   user: null,
+  expenses: [],
 });
-console.log("Before unsub")
-const unsub = onAuthStateChanged(auth, (user) => {
-  console.log("onAuthStateChanged at unsub function")
+
+const unsub = onAuthStateChanged(auth, async (user) => {
   AuthStore.update((store) => {
     store.user = user;
     store.isLoggedIn = user ? true : false;
     store.initialized = true;
   });
+  if (user) {
+    try {
+      const expenses = await getUserExpenses(user.uid);
+      AuthStore.update((store) => {
+        store.expenses = expenses;
+      });
+    } catch (e) {
+      console.log("Error getting user expenses: ", e);
+    }
+  }
 });
 
 export const appSignIn = async (email, password) => {
