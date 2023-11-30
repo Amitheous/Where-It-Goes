@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "scheme": "acme",
+    "web": {
+      "bundler": "metro"
+    },
+    "name": "where-it-goes",
+    "slug": "where-it-goes",
+    "extra": {
+      "eas": {
+        "projectId": "1edbe5c9-a364-41ea-b617-37e890d5cf68"
+      }
+    },
+    "android": {
+      "package": "com.amitheous.whereitgoes"
+    }
+  }
+}
