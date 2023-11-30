@@ -6,13 +6,14 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth, getUserExpenses } from "./firebaseConfig";
+import { app, auth, getUserExpenses, getUserCategories } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
   initialized: false,
   user: null,
   expenses: [],
+  categories: []
 });
 
 const unsub = onAuthStateChanged(auth, async (user) => {
@@ -30,8 +31,17 @@ const unsub = onAuthStateChanged(auth, async (user) => {
     } catch (e) {
       console.log("Error getting user expenses: ", e);
     }
+    try {
+      const categories = await getUserCategories(user.uid);
+      AuthStore.update((store) => {
+        store.categories = categories;
+      });
+    } catch (e) {
+      console.log("Error getting user categories: ", e);
+    }
   }
 });
+
 
 export const appSignIn = async (email, password) => {
   try {
