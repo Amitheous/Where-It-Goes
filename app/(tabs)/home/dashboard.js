@@ -1,12 +1,14 @@
-import { View, StyleSheet } from "react-native";
-import { Stack, useRouter } from "expo-router";
-import { Appbar, useTheme, Card, Text } from "react-native-paper";
-
+import { View, StyleSheet } from "react-native"; // Import Button component
+import { useNavigation } from "expo-router";
+import { Appbar, useTheme, Card, Text, Button } from "react-native-paper";
+import PrimaryButton from "../../components/primaryButton";
+import { AuthStore } from "../../../store";
+import { useStoreState } from "pullstate";
 
 export default function DashboardScreen() {
-  const router = useRouter();
-  // const expenses = useStoreState(AuthStore, s => s.expenses);
-  // console.log(expenses)
+  const expenses = useStoreState(AuthStore, s => s.expenses);
+  const categories = useStoreState(AuthStore, s => s.categories);
+  const navigation = useNavigation();
   const theme = useTheme();
   const styles = StyleSheet.create({
     header: {
@@ -25,25 +27,24 @@ export default function DashboardScreen() {
     }
   });
 
-  const currentMonthSpend = "$500";
-  const previousMonthSpend = "$400";
-  const twoMonthsAgoSpend = "$300";
+  const fetchCategory = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'No Category'
+  }
+
+  // Add a function to handle the button press and navigate to the modal
+  const handleViewExpenseHistory = () => {
+    navigation.navigate("ExpenseHistoryModal");
+  };
 
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header style={styles.header} >
         <Appbar.Content title="Dashboard"/>
       </Appbar.Header>
-      <View>
-        <Card style={styles.card}>
-          <Card.Title titleVariant="titleMedium" title="Monthly Spend" titleStyle={styles.cardText} />
-          <Card.Content>
-            <Text style={styles.cardText}>Current Month Spend: {currentMonthSpend}</Text>
-            <Text style={styles.cardText}>Previous Month Spend: {previousMonthSpend}</Text>
-            <Text style={styles.cardText}>2 Months Ago Spend: {twoMonthsAgoSpend}</Text>
-          </Card.Content>
+        <Card>
+          <PrimaryButton buttonStyle={{width: "100%"}}text="View Expense History"  onPress={handleViewExpenseHistory}  />
         </Card>
-      </View>
     </View>
   );
 }
