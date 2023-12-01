@@ -53,8 +53,17 @@ This document outlines the development roadmap and versioning plan for Where It 
 - Custom Categories and Tagging.
 - Widgets.
 
-## Versioning Strategy
+## Versioning Strategy / Commit format
 The project follows Semantic Versioning where version numbers are assigned in the format of MAJOR.MINOR.PATCH.
+Commit messages are formatted as follows:
+- `Feature: <description>` for new features.
+- `Fix: <description>` for bug fixes.
+- `Docs: <description>` for documentation updates.
+- `Style: <description>` for formatting and style changes.
+- `Refactor: <description>` for code refactoring.
+- `Implement: <description>` for implementing new features / primary development functionality.
+- `Test: <description>` for adding tests.
+Commit message body is a list of bullet points describing the changes made.
 
 ## Branching Strategy
 - `master/main`: Stable, deployable code.
