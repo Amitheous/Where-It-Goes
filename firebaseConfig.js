@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth/react-native";
-import { getFirestore, collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, addDoc } from 'firebase/firestore'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { firebaseConfig } from './firebaseKeys';
 
@@ -41,7 +41,15 @@ export const getUserCategories = async (uid) => {
     }
 };
 
+export const addExpense = async (expense) => {
+    try {
+        const docRef = await addDoc(collection(db, "expenses"), expense);
+        return docRef;
+    } catch (error) {
+        console.log(error.message);
+        return null;
+    }
+};
 
-// console.log("Category Test: ", getCategoryById("M26VrnFfhX00kyHlp2fj"));
 
 export default app;
