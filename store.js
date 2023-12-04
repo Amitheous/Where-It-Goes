@@ -6,7 +6,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth, getUserExpenses, addExpense, getUserCategories } from "./firebaseConfig";
+import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
@@ -109,6 +109,21 @@ export const appAddExpense = async (expense) => {
     return { error: e };
   }
 };
+
+export const appDeleteExpense = async (expenseId) => {
+  try {
+    const success = await deleteExpense(expenseId);
+    if (success) {
+      const newExpenses = AuthStore.useState((s) => s.expenses.filter((expense) => expense.id !== expenseId));
+      AuthStore.update((s) => {
+        s.expenses = newExpenses;
+      });
+    }
+    return { success };
+  } catch (e) {
+    return { error: e };
+  }
+}
 
 
 registerInDevtools({ AuthStore });

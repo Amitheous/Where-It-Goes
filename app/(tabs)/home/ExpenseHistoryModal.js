@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { Link, useNavigation } from "expo-router";
 import { Appbar, Card, Text, Button, useTheme, Divider } from "react-native-paper";
-import { AuthStore } from "../../../store";
+import { AuthStore, appDeleteExpense } from "../../../store";
 import { useStoreState } from "pullstate";
 
 export default function Modal() {
@@ -37,6 +37,19 @@ export default function Modal() {
     return category ? category.name : "No Category";
   };
 
+  const handleDeleteExpense = async (expenseId) => {
+    try {
+      const success = await appDeleteExpense(expenseId);
+      if (success) {
+        setData(prevData => prevData.filter(item => item.id !== expenseId));
+        console.log("Expense deleted successfully");
+      }
+    } catch (error) {
+      console.log(error.message);
+      // Show an error message to the user
+    }
+  };
+
   const loadMoreData = () => {
     const newData = expenses.slice(0, page * 40);
     setData(newData);
@@ -47,12 +60,20 @@ export default function Modal() {
     loadMoreData();
   }, []);
 
+
   const renderExpenseItem = ({ item }) => (
     <Card style={styles.card}>
       <Card.Title
         titleVariant="titleMedium"
         title={item.title}
         titleStyle={styles.cardText}
+        right={(props) => (
+          <Button
+            icon="delete"
+            onPress={() => handleDeleteExpense(item.id)}
+            {...props}
+          />
+        )}
       />
       <Card.Content>
         <Text style={styles.cardText}>
