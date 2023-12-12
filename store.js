@@ -6,7 +6,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense } from "./firebaseConfig";
+import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
@@ -81,10 +81,8 @@ export const appSignOut = async () => {
 
 export const appSignUp = async (email, password, name) => {
   try {
-    // this will trigger onAuthStateChange to update the store..
     const resp = await createUserWithEmailAndPassword(auth, email, password);
 
-    // add the displayName
     await updateProfile(resp.user, { displayName: name });
 
     AuthStore.update((store) => {
@@ -125,5 +123,16 @@ export const appDeleteExpense = async (expenseId) => {
   }
 }
 
+export const appAddCategory = async (category) => {
+  try {
+    const id = await addCategory(category);
+    AuthStore.update((store) => {
+      store.categories.push({ userId: store.user.uid, id: id, ...category });
+    });
+    return { id };
+  } catch (e) {
+    return { error: e };
+  }
+};
 
 registerInDevtools({ AuthStore });

@@ -5,7 +5,6 @@ import { auth } from "../../../firebaseConfig";
 export default function SettingsScreen() {
   const router = useRouter();
   const handleLogout = async () => {
-    console.log("Current User: ", auth.currentUser?.uid || "No user logged in")
     try {
       await auth.signOut();
       router.push("/(auth)/login");

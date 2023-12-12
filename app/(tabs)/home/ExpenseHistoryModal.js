@@ -42,11 +42,9 @@ export default function Modal() {
       const success = await appDeleteExpense(expenseId);
       if (success) {
         setData(prevData => prevData.filter(item => item.id !== expenseId));
-        console.log("Expense deleted successfully");
       }
     } catch (error) {
       console.log(error.message);
-      // Show an error message to the user
     }
   };
 

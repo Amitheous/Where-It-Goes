@@ -28,21 +28,6 @@ export const getUserExpenses = async (uid) => {
     }
 };
 
-export const getUserCategories = async (uid) => {
-    try {
-        const q = query(collection(db, "categories"), where("userId", "==", uid));
-        const querySnapshot = await getDocs(q);
-        let categories = [];
-        querySnapshot.forEach((doc) => {
-            categories.push({ id: doc.id, ...doc.data() });
-        });
-        return categories;
-    } catch (error) {
-        console.log(error.message);
-        return [];
-    }
-};
-
 export const addExpense = async (expense) => {
     try {
         const docRef = await addDoc(collection(db, "expenses"), expense);
@@ -60,6 +45,31 @@ export const deleteExpense = async (expenseId) => {
     } catch (error) {
         console.log(error.message);
         return false;
+    }
+};
+
+export const addCategory = async (category) => {
+    try {
+        const docRef = await addDoc(collection(db, "categories"), category);
+        return docRef.id;
+    } catch (error) {
+        console.log(error.message);
+        return null;
+    }
+};
+
+export const getUserCategories = async (uid) => {
+    try {
+        const q = query(collection(db, "categories"), where("userId", "==", uid));
+        const querySnapshot = await getDocs(q);
+        let categories = [];
+        querySnapshot.forEach((doc) => {
+            categories.push({ id: doc.id, ...doc.data() });
+        });
+        return categories;
+    } catch (error) {
+        console.log(error.message);
+        return [];
     }
 };
 
