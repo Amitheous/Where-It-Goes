@@ -3,7 +3,7 @@ import React, { useState, useRef } from "react";
 import { Stack, useRouter } from "expo-router";
 import { appSignIn } from "../../store.js";
 import PrimaryButton from "../components/primaryButton.js";
-import PrimaryTextInput from "../components/primaryTextInput.js";
+import AuthTextInput from "../components/authTextInput.js";
 import { useTheme } from "react-native-paper";
 
 
@@ -37,7 +37,7 @@ export default function LogIn() {
       <Stack.Screen 
         options={{ title: "Login" }} 
       />
-      <PrimaryTextInput 
+      <AuthTextInput 
         ref={emailRef}
         label="Email" 
         value={email}
@@ -45,7 +45,7 @@ export default function LogIn() {
         returnKeyType="next"
         onSubmitEditing={() => passwordRef.current && passwordRef.current.focus()}
       />
-      <PrimaryTextInput 
+      <AuthTextInput 
         ref={passwordRef}
         label="Password" 
         value={password}

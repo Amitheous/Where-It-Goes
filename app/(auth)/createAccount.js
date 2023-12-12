@@ -3,7 +3,7 @@ import { View, Alert, StatusBar } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { appSignUp } from "../../store.js";
 import PrimaryButton from "../components/primaryButton.js";
-import PrimaryTextInput from "../components/primaryTextInput.js";
+import AuthTextInput from "../components/authTextInput.js";
 import { useTheme } from "react-native-paper";
 
 export default function CreateAccount() {

@@ -3,15 +3,17 @@ import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 
-const PrimaryTextInput = forwardRef(({ label, value, onChangeText, secureTextEntry, style, returnKeyType, ...props }, ref) => {
+const AuthTextInput = forwardRef(({ label, value, onChangeText, secureTextEntry, style, returnKeyType, ...props }, ref) => {
   const theme = useTheme();
 
   const styles = StyleSheet.create({
     input: {
-      width: "100%",
-      marginVertical: 5,
+      width: "75%",
+      marginTop: 10,
+      paddingVertical: 10,
+      backgroundColor: theme.colors.backdrop,
       fontFamily: 'Montserrat_400Regular',
-      height: 48,
+      
     }
   });
 
@@ -24,15 +26,13 @@ const PrimaryTextInput = forwardRef(({ label, value, onChangeText, secureTextEnt
       secureTextEntry={secureTextEntry}
       style={[styles.input, style]}
       mode="outlined"
-      dense={true}
       autoCapitalize='none'
       returnKeyType={returnKeyType}
       {...props}
-
       
     />
   );
 });
 
 
-export default PrimaryTextInput;
+export default AuthTextInput;
