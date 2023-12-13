@@ -40,11 +40,11 @@ export default function DashboardScreen() {
 
   const handleViewExpenseHistory = () => {
     updateNewExpenses(auth.currentUser);
-    navigation.navigate("expenseHistoryModal");
+    navigation.navigate("expenseHistoryScreen");
   };
 
   const handleAddNewExpense = () => {
-    navigation.navigate("addNewExpenseModal");
+    navigation.navigate("addNewExpenseScreen");
   };
 
   return (
