@@ -100,7 +100,7 @@ export const appAddExpense = async (expense) => {
   try {
     const id = await addExpense(expense);
     AuthStore.update((store) => {
-      store.expenses.push({ userId: store.user.uid, ...expense });
+      store.expenses.push({ userId: store.user.uid, ...expense, id });
     });
     return { id };
   } catch (e) {

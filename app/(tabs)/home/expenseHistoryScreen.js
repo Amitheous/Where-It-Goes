@@ -18,7 +18,7 @@ export default function Modal() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
 
-  const [EditExpenseModalVisible, setEditExpenseModalVisible] = useState(false);
+  const [editExpenseModalVisible, setEditExpenseModalVisible] = useState(false);
   const [currentExpenseId, setCurrentExpenseId] = useState("");
   const [currentExpenseTitle, setCurrentExpenseTitle] = useState("");
   const [currentExpenseDescription, setCurrentExpenseDescription] = useState("");
@@ -95,12 +95,17 @@ export default function Modal() {
     try {
       const success = await appDeleteExpense(expenseId);
       if (success) {
+        AuthStore.update(s => {
+          const updatedExpenses = s.expenses.filter(item => item.id !== expenseId);
+          return { ...s, expenses: updatedExpenses };
+        });
         setData(prevData => prevData.filter(item => item.id !== expenseId));
       }
     } catch (error) {
       console.log(error.message);
     }
   };
+  
 
   
 
@@ -112,7 +117,15 @@ export default function Modal() {
       setCurrentExpenseDescription(expense.description);
       setCurrentExpenseAmount(expense.amount.toString());
       setCurrentExpenseDate(expense.date);
-      setSelectedUpdateCategory(expense.category);
+  
+      // Find the category object
+      const categoryObject = categories.find(cat => cat.id === expense.category);
+      if (categoryObject) {
+        setCurrentExpenseCategory({ key: categoryObject.id, value: categoryObject.name });
+      } else {
+        setCurrentExpenseCategory(null);
+      }
+  
       setEditExpenseModalVisible(true);
     }
   };
@@ -130,6 +143,7 @@ export default function Modal() {
           dataForUpdate.push({ value: addedCategory.name, key: addedCategory.id });
           setCategoryName('');
           setCategoryDescription('');
+          setCurrentExpenseCategory({ key: addedCategory.id, value: newCategory.name });
           hideNewCategoryModal();
 
         } else {
@@ -186,7 +200,7 @@ export default function Modal() {
         right={(props) => (
           <Button
             icon="pencil"
-            onPress={() => handleOpenExpenseEditor(item.id)}
+            onPress={() => handleOpenExpenseEditor(item.id) }
             {...props}
           />
         )}
@@ -221,12 +235,12 @@ export default function Modal() {
       <FlatList
         data={data}
         renderItem={renderExpenseItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.toString()}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
       />
       <Portal>
-        <RNPModal style={{backgroundColor:theme.colors.backdrop}} visible={EditExpenseModalVisible} onDismiss={hideEditExpenseModal} contentContainerStyle={styles.modalContainer}>
+        <RNPModal style={{backgroundColor:theme.colors.backdrop}} visible={editExpenseModalVisible} onDismiss={hideEditExpenseModal} contentContainerStyle={styles.modalContainer}>
             <View style={styles.modalForm}>
                 <PrimaryTextInput
                     label="Expense Title"
@@ -253,6 +267,7 @@ export default function Modal() {
                     style={styles.modalEntries}
                 />
                 <SelectList
+                  defaultOption={currentExpenseCategory}
                   setSelected={(val) => {
                     if (val === "new_category") {
                       showNewCategoryModal(); // Show the modal to create a new category

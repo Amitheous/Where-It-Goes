@@ -31,7 +31,7 @@ export const getUserExpenses = async (uid) => {
 export const addExpense = async (expense) => {
     try {
         const docRef = await addDoc(collection(db, "expenses"), expense);
-        return docRef;
+        return docRef.id;
     } catch (error) {
         console.log(error.message);
         return null;

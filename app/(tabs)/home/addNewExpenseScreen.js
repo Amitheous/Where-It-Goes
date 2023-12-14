@@ -44,6 +44,7 @@ export default function Modal() {
     const [categoryName, setCategoryName] = useState("");
     const [categoryDescription, setCategoryDescription] = useState("");
     const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
+    const [createdCategory, setCreatedCategory] = useState({ value: "Select a Category", key: "1" }); // This is the default option for the SelectList component, which is the first option in the data array [see below
 
     const showNewCategoryModal = () => setNewCategoryModalVisible(true);
     const hideNewCategoryModal = () => setNewCategoryModalVisible(false);
@@ -51,7 +52,6 @@ export default function Modal() {
     const data = [{ value: "Create A New Category", key: "new_category" }, ...categories.map((category) => ({ value: category.name, key: category.id }))];
 
     const handleAddExpense = async () => {
-        console.log("selectedCateogry: ", selectedCategory)
         const expense = {
             title,
             description,
@@ -60,7 +60,6 @@ export default function Modal() {
             category: selectedCategory, // use the ID directly
             userId: auth.currentUser.uid,
         };
-        console.log("expense to add: ", expense)
         try {
             appAddExpense(expense);
             navigation.goBack();
@@ -69,28 +68,33 @@ export default function Modal() {
     };
 
     const handleCreateCategory = async () => {
-        console.log("data before add: ", data)
-        const category = {
+        const newCategory = {
             name: categoryName,
             description: categoryDescription,
-            userId: auth.currentUser.uid,
+            userId: auth.currentUser.uid, // Assuming you have the user's UID
         };
+    
         try {
-            const newCategory = await appAddCategory(category);
-            if (newCategory && !newCategory.error) {
-                console.log("newCategory: ", newCategory)
-                data.push({ value: categoryName, key: newCategory.id });
-                console.log("data after add: ", data)
-                hideNewCategoryModal();
+            const addedCategory = await appAddCategory(newCategory);
+            if (addedCategory && !addedCategory.error) {
+                const newCategoryData = { value: newCategory.name, key: addedCategory.id };
+                data.push(newCategoryData); // Update the SelectList data source
+    
+                // Set this new category as the selected category
+                setCreatedCategory(newCategoryData);
+    
                 setCategoryName(''); // Reset category name
                 setCategoryDescription(''); // Reset category description
+                hideNewCategoryModal();
+    
             } else {
-                console.log(newCategory.error);
+                console.log(addedCategory.error);
             }
         } catch (error) {
             console.log(error.message);
         }
     };
+    
     
 
 
@@ -138,14 +142,13 @@ export default function Modal() {
                     returnKeyType="next"
                 />
                 <SelectList 
+                    defaultOption={createdCategory}
                     setSelected={(val) => {
-                        console.log("val: ", val)
                         if (val === "new_category") {
                             showNewCategoryModal();
                         } else {
                             // Find the corresponding key for the selected value
                             const selectedCategoryKey = val;
-                            console.log("selectedCategoryKey: ", selectedCategoryKey);
                             setSelectedCategory(selectedCategoryKey);
                         }
                     }} 
