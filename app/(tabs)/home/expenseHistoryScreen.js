@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList } from "react-native";
 import { Link, useNavigation } from "expo-router";
 import { Appbar, Card, Text, Button, useTheme, Divider, Portal, Modal as RNPModal } from "react-native-paper";
 import PrimaryTextInput from "../../components/primaryTextInput";
-import { AuthStore, appDeleteExpense } from "../../../store";
+import { AuthStore, appDeleteExpense, appUpdateExpense } from "../../../store";
 import { useStoreState } from "pullstate";
 
 export default function Modal() {
@@ -15,13 +15,19 @@ export default function Modal() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
 
-  // Swap to expense editing instead of categories
-  const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
+  const [EditExpenseModalVisible, setEditExpenseModalVisible] = useState(false);
   const [categoryName, setCategoryName] = useState("");
-  const [categoryDescription, setCategoryDescription] = useState("");
+  const [expenseDescription, setExpenseDescription] = useState("");
 
-  const showNewCategoryModal = () => setNewCategoryModalVisible(true);
-  const hideNewCategoryModal = () => setNewCategoryModalVisible(false);
+  const [currentExpenseId, setCurrentExpenseId] = useState("");
+  const [currentExpenseTitle, setCurrentExpenseTitle] = useState("");
+  const [currentExpenseDescription, setCurrentExpenseDescription] = useState("");
+  const [currentExpenseAmount, setCurrentExpenseAmount] = useState("");
+  const [currentExpenseDate, setCurrentExpenseDate] = useState("");
+  const [currentExpenseCategory, setCurrentExpenseCategory] = useState("");
+
+  const showEditExpenseModal = () => setEditExpenseModalVisible(true);
+  const hideEditExpenseModal = () => setEditExpenseModalVisible(false);
 
 
   const styles = StyleSheet.create({
@@ -40,6 +46,25 @@ export default function Modal() {
       color: theme.colors.onTertiaryContainer,
       fontFamily: "Montserrat_400Regular",
     },
+    modalContainer: {
+      backgroundColor: 
+      theme.colors.background, 
+      borderRadius:10, 
+      marginHorizontal:10, 
+    },
+    modalEntries: {
+      width: "90%",
+      marginBottom: 16,
+    },
+    modalForm: {
+      justifyContent: "center",
+      alignItems: "center",
+      paddingVertical: 20
+    },
+    cancelButton: {
+      marginTop: 16,
+      backgroundColor: theme.colors.error
+    }
   });
 
   const fetchCategory = (categoryId) => {
@@ -59,10 +84,44 @@ export default function Modal() {
   };
 
   const handleOpenExpenseEditor = (expenseId) => {
-    // open modal for editing expense, with fields pre-populated with expense data
-    // include button in modal to submit edits, and another button to cancel
-    // submit edits will call appUpdateExpense(expenseId, newExpenseData), then update store entry and refresh expense history
-  }
+    const expense = expenses.find(e => e.id === expenseId);
+    if (expense) {
+      setCurrentExpenseId(expenseId);
+      setCurrentExpenseTitle(expense.title);
+      setCurrentExpenseDescription(expense.description);
+      setCurrentExpenseAmount(expense.amount.toString());
+      setCurrentExpenseDate(expense.date);
+      setCurrentExpenseCategory(expense.category);
+      setEditExpenseModalVisible(true);
+    }
+  };
+
+  const handleUpdateExpense = async () => {
+    const updatedExpense = {
+      title: currentExpenseTitle,
+      description: currentExpenseDescription,
+      amount: parseFloat(currentExpenseAmount), // Convert to number if needed
+      date: currentExpenseDate,
+      category: currentExpenseCategory
+    };
+    console.log("Expense to update frontend: ", updatedExpense);
+  
+    try {
+      const success = await appUpdateExpense(currentExpenseId, updatedExpense);
+      if (success) {
+        const newData = data.map(item => {
+          if (item.id === currentExpenseId) {
+            return { ...item, ...updatedExpense };
+          }
+          return item;
+        });
+        setData(newData);
+        setEditExpenseModalVisible(false);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const loadMoreData = () => {
     const newData = expenses.slice(0, page * 40);
@@ -124,26 +183,51 @@ export default function Modal() {
         onEndReachedThreshold={0.5}
       />
       <Portal>
-        <RNPModal style={{backgroundColor:theme.colors.backdrop}} visible={newCategoryModalVisible} onDismiss={hideNewCategoryModal} contentContainerStyle={{backgroundColor: theme.colors.background, borderRadius:10, marginHorizontal:10 }}>
-            <View style={styles.categoryForm}>
+        <RNPModal style={{backgroundColor:theme.colors.backdrop}} visible={EditExpenseModalVisible} onDismiss={hideEditExpenseModal} contentContainerStyle={styles.modalContainer}>
+            <View style={styles.modalForm}>
                 <PrimaryTextInput
-                    label="Category Title"
-                    value={categoryName}
-                    onChangeText={setCategoryName}
-                    style={{width:"90%"}}
+                    label="Expense Title"
+                    value={currentExpenseTitle}
+                    onChangeText={setCurrentExpenseTitle}
+                    style={styles.modalEntries}
                 />
                 <PrimaryTextInput
-                    label="Category Description"
-                    value={categoryDescription}
-                    onChangeText={setCategoryDescription}
-                    style={{width:"90%"}}
+                    label="Expense Description"
+                    value={currentExpenseDescription}
+                    onChangeText={setCurrentExpenseDescription}
+                    style={styles.modalEntries}
+                />
+                <PrimaryTextInput
+                    label="Expense Amount"
+                    value={currentExpenseAmount}
+                    onChangeText={setCurrentExpenseAmount}
+                    style={styles.modalEntries}
+                />
+                <PrimaryTextInput
+                    label="Expense Date"
+                    value={currentExpenseDate}
+                    onChangeText={setCurrentExpenseDate}
+                    style={styles.modalEntries}
+                />
+                <PrimaryTextInput
+                    label="Expense Category"
+                    value={currentExpenseCategory}
+                    onChangeText={setCurrentExpenseCategory}
+                    style={styles.modalEntries}
                 />
                 <Button
                     mode="contained"
                     style={styles.button}
-                    onPress
+                    onPress={() => handleUpdateExpense()}
                 >
-                    Create Category
+                    Update Expense
+                </Button>
+                <Button
+                    mode="contained"
+                    style={styles.cancelButton}
+                    onPress={() => hideEditExpenseModal()}
+                >
+                    Cancel
                 </Button>
             </View>
         </RNPModal>

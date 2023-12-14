@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { initializeFirestore } from 'firebase/firestore';
 import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth/react-native";
-import { getFirestore, collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc } from 'firebase/firestore'
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, addDoc, deleteDoc, updateDoc } from 'firebase/firestore'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { firebaseConfig } from './firebaseKeys';
 
@@ -37,6 +37,16 @@ export const addExpense = async (expense) => {
         return null;
     }
 };
+
+export const updateExpense = async (expenseId, expense) => {
+    try {
+        await updateDoc(doc(db, "expenses", expenseId), expense);
+        return true;
+    } catch (error) {
+        console.log(error.message);
+        return false;
+    }
+}
 
 export const deleteExpense = async (expenseId) => {
     try {
