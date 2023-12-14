@@ -40,7 +40,7 @@ export default function CreateAccount() {
         options={{ title: "Create Account" }}
       />
 
-      <PrimaryTextInput
+      <AuthTextInput
         ref={emailRef}
         placeholder="Email"
         value={email}
@@ -49,7 +49,7 @@ export default function CreateAccount() {
         returnKeyType="next"
       />
 
-      <PrimaryTextInput
+      <AuthTextInput
         ref={nameRef}
         placeholder="Name"
         value={name}
@@ -58,7 +58,7 @@ export default function CreateAccount() {
         returnKeyType="next"
       />
 
-      <PrimaryTextInput
+      <AuthTextInput
         ref={passwordRef}
         placeholder="Password"
         secureTextEntry={true}
