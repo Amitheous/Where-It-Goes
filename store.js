@@ -124,8 +124,6 @@ export const appDeleteExpense = async (expenseId) => {
 }
 
 export const appUpdateExpense = async (expenseId, expense) => {
-  console.log("ExpenseId passed to backend: ", expenseId);
-  console.log("Expense passed to backend: ", expense)
   try {
     const success = await updateExpense(expenseId, expense);
     if (success) {
