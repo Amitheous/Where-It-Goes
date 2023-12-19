@@ -1,4 +1,4 @@
-import { useRouter, useSegments, useRootNavigationState } from "expo-router";
+import { useRouter, useSegments, useRootNavigationState, SplashScreen } from "expo-router";
 import { AuthStore } from "../store";
 import React from "react";
 import { Text, View } from "react-native";
@@ -20,7 +20,7 @@ const Index = () => {
     }
   }, [isLoggedIn, initialized, segments, navigationState?.key]);
 
-  return <View>{!navigationState?.key || !initialized ? <Text>LOADING...</Text> : <></>}</View>;
+  return <View>{!navigationState?.key || !initialized ? <SplashScreen/> : <></>}</View>;
 };
 
 export default Index;

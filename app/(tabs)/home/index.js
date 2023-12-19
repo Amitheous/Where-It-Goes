@@ -14,7 +14,7 @@ const TrendsRoute = () => <TrendsScreen />;
 
 const SettingsRoute = () => <SettingsScreen />;
 
-const MyComponent = () => {
+const MainApp = () => {
   const theme = useTheme();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
@@ -41,4 +41,4 @@ const MyComponent = () => {
   );
 };
 
-export default MyComponent;
+export default MainApp;

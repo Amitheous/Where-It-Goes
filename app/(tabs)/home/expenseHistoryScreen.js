@@ -9,7 +9,7 @@ import { SelectList } from "react-native-dropdown-select-list";
 import { MaterialIcons } from '@expo/vector-icons';
 import { auth } from "../../../firebaseConfig";
 
-export default function Modal() {
+export default function ExpenseHistory() {
   const expenses = useStoreState(AuthStore, (s) => s.expenses);
   const categories = useStoreState(AuthStore, (s) => s.categories);
   const navigation = useNavigation();
@@ -235,7 +235,7 @@ export default function Modal() {
       <FlatList
         data={data}
         renderItem={renderExpenseItem}
-        keyExtractor={(item) => item.toString()}
+        keyExtractor={(item) => item.id.toString()}
         onEndReached={loadMoreData}
         onEndReachedThreshold={0.5}
       />
