@@ -155,10 +155,11 @@ export default function ExpenseHistory() {
   };
     
   const handleUpdateExpense = async () => {
+    const cleanedAmount = parseFloat(currentExpenseAmount.replace(/[^0-9.]/g, '')) || 0.00;
     const updatedExpense = {
       title: currentExpenseTitle,
       description: currentExpenseDescription,
-      amount: parseFloat(currentExpenseAmount), // Convert to number if needed
+      amount: cleanedAmount, // Convert to number if needed
       date: currentExpenseDate,
       category: selectedUpdateCategory,
     };
@@ -189,6 +190,26 @@ export default function ExpenseHistory() {
   useEffect(() => {
     loadMoreData();
   }, []);
+
+  function formatCurrencyInput(value) {
+    // Remove all non-digit characters except the decimal point
+    let formatted = value.replace(/[^0-9.]/g, '');
+    if (formatted.includes('.')) {
+        let parts = formatted.split('.');
+
+        if (parts[1].length > 2) {
+            parts[1] = parts[1].substring(0, 2);
+        }
+
+        formatted = parts[0] + '.' + parts[1];
+    }
+    // Add commas every 3 digits before the decimal point
+    formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+
+
+    return formatted;
+}
 
 
   const renderExpenseItem = ({ item }) => (
@@ -256,8 +277,8 @@ export default function ExpenseHistory() {
                 />
                 <PrimaryTextInput
                     label="Expense Amount"
-                    value={currentExpenseAmount}
-                    onChangeText={setCurrentExpenseAmount}
+                    value={"$" + currentExpenseAmount}
+                    onChangeText={(value) => setCurrentExpenseAmount(formatCurrencyInput(value))}
                     style={styles.modalEntries}
                 />
                 <PrimaryTextInput

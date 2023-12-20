@@ -52,10 +52,12 @@ export default function Modal() {
     const data = [{ value: "Create A New Category", key: "new_category" }, ...categories.map((category) => ({ value: category.name, key: category.id }))];
 
     const handleAddExpense = async () => {
+        const cleanedAmount = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0.00;
+
         const expense = {
             title,
             description,
-            amount,
+            amount: cleanedAmount,
             date,
             category: selectedCategory, // use the ID directly
             userId: auth.currentUser.uid,
@@ -94,6 +96,27 @@ export default function Modal() {
             console.log(error.message);
         }
     };
+
+    function formatCurrencyInput(value) {
+        // Remove all non-digit characters except the decimal point
+        let formatted = value.replace(/[^0-9.]/g, '');
+        if (formatted.includes('.')) {
+            let parts = formatted.split('.');
+    
+            if (parts[1].length > 2) {
+                parts[1] = parts[1].substring(0, 2);
+            }
+    
+            formatted = parts[0] + '.' + parts[1];
+        }
+        // Add commas every 3 digits before the decimal point
+        formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+
+    
+        return formatted;
+    }
+    
     
     
 
@@ -128,8 +151,9 @@ export default function Modal() {
                 <PrimaryTextInput
                     ref={amountInputRef}
                     label="Amount"
-                    value={amount}
-                    onChangeText={setAmount}
+                    value={"$" + amount}
+                    keyboardType="numeric"
+                    onChangeText={(value) => setAmount(formatCurrencyInput(value))}
                     onSubmitEditing={() => dateInputRef.current && dateInputRef.current.focus()}
                     returnKeyType="next"
                 />

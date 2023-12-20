@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useTheme } from 'react-native-paper';
 
-const PrimaryTextInput = forwardRef(({ label, value, onChangeText, secureTextEntry, style, returnKeyType, ...props }, ref) => {
+const PrimaryTextInput = forwardRef(({ label, value, onChangeText, secureTextEntry, style, returnKeyType, keyboardType, ...props }, ref) => {
   const theme = useTheme();
 
   const styles = StyleSheet.create({
@@ -27,6 +27,7 @@ const PrimaryTextInput = forwardRef(({ label, value, onChangeText, secureTextEnt
       dense={true}
       autoCapitalize='none'
       returnKeyType={returnKeyType}
+      keyboardType={keyboardType}
       {...props}
 
       
