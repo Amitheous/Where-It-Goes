@@ -1,20 +1,26 @@
 {
-    "cli": {
-      "version": ">= 3.10.2",
-      "promptToConfigurePushNotifications": false
-    },
-    "build": {
-      "development": {
-        "ios": {"image": "latest"},
-        "developmentClient": true,
-        "distribution": "internal"
+  "cli": {
+    "version": ">= 3.10.2",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "ios": {
+        "image": "latest"
       },
-      "preview": {
-        "distribution": "internal"
-      },
-      "production": {}
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
     },
-    "submit": {
-      "production": {}
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview"
+    },
+    "production": {
+      "channel": "production"
     }
+  },
+  "submit": {
+    "production": {}
   }
+}

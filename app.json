@@ -4,7 +4,7 @@
     "web": {
       "bundler": "metro"
     },
-    "name": "where-it-goes",
+    "name": "Where It Goes",
     "slug": "where-it-goes",
     "extra": {
       "eas": {
@@ -13,6 +13,13 @@
     },
     "android": {
       "package": "com.amitheous.whereitgoes"
-    }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1edbe5c9-a364-41ea-b617-37e890d5cf68"
+    },
+    "ios": {}
   }
 }
