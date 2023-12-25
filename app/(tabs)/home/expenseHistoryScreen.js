@@ -8,6 +8,8 @@ import { useStoreState } from "pullstate";
 import { SelectList } from "react-native-dropdown-select-list";
 import { MaterialIcons } from '@expo/vector-icons';
 import { auth } from "../../../firebaseConfig";
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Timestamp } from "firebase/firestore"
 
 export default function ExpenseHistory() {
   const expenses = useStoreState(AuthStore, (s) => s.expenses);
@@ -37,6 +39,10 @@ export default function ExpenseHistory() {
 
   const showEditExpenseModal = () => setEditExpenseModalVisible(true);
   const hideEditExpenseModal = () => setEditExpenseModalVisible(false);
+
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateSelected, setDateSelected] = useState(false);
+  const [dateChanged, setDateChanged] = useState(false);
 
   const dataForUpdate = [{ value: "Create A New Category", key: "new_category" }, ...categories.map((category) => ({ value: category.name, key: category.id }))];
 
@@ -116,7 +122,8 @@ export default function ExpenseHistory() {
       setCurrentExpenseTitle(expense.title);
       setCurrentExpenseDescription(expense.description);
       setCurrentExpenseAmount(expense.amount.toString());
-      setCurrentExpenseDate(expense.date);
+      setCurrentExpenseDate(expense.date.toDate());
+      setDateChanged(false);
   
       // Find the category object
       const categoryObject = categories.find(cat => cat.id === expense.category);
@@ -160,7 +167,7 @@ export default function ExpenseHistory() {
       title: currentExpenseTitle,
       description: currentExpenseDescription,
       amount: cleanedAmount, // Convert to number if needed
-      date: currentExpenseDate,
+      date: Timestamp.fromDate(currentExpenseDate),
       category: selectedUpdateCategory,
     };
   
@@ -210,6 +217,11 @@ export default function ExpenseHistory() {
 
     return formatted;
 }
+
+const formatDate = (date) => {
+  // Example format: Jan 1, 2023
+  return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+};
 
 
   const renderExpenseItem = ({ item }) => (
@@ -280,13 +292,31 @@ export default function ExpenseHistory() {
                     value={"$" + currentExpenseAmount}
                     onChangeText={(value) => setCurrentExpenseAmount(formatCurrencyInput(value))}
                     style={styles.modalEntries}
+                    keyboardType="numeric"
                 />
-                <PrimaryTextInput
-                    label="Expense Date"
-                    value={currentExpenseDate}
-                    onChangeText={setCurrentExpenseDate}
-                    style={styles.modalEntries}
-                />
+                <Button
+                  mode="contained"
+                  style={{"marginBottom": 16, width: "85%", backgroundColor: theme.colors.tertiary}}
+                  onPress={() => setShowDatePicker(true)}
+                  icon="calendar"
+                >
+                  {dateChanged ? formatDate(currentExpenseDate) : (currentExpenseDate ? formatDate(currentExpenseDate) : "Select Date")}
+                </Button>
+                {showDatePicker && (
+                  <DateTimePicker
+                    value={currentExpenseDate || new Date()}
+                    mode="date"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      setShowDatePicker(false); // Hide the picker in both cases
+                      if (selectedDate) {
+                        setCurrentExpenseDate(selectedDate);
+                        setDateChanged(true); // Set the flag when date is changed
+                      }
+                    }}
+                  />
+                )}
+
                 <SelectList
                   defaultOption={currentExpenseCategory}
                   setSelected={(val) => {

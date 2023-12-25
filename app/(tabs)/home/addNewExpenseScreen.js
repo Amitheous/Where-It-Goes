@@ -8,6 +8,8 @@ import { useState, useRef } from "react";
 import { auth } from "../../../firebaseConfig";
 import { SelectList } from "react-native-dropdown-select-list";
 import { MaterialIcons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Timestamp } from "firebase/firestore"
 
 export default function Modal() {
     const categories = useStoreState(AuthStore, (s) => s.categories);
@@ -39,12 +41,14 @@ export default function Modal() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [amount, setAmount] = useState("");
-    const [date, setDate] = useState("");
+    const [date, setDate] = useState(new Date());
     const [selectedCategory, setSelectedCategory] = useState("");
     const [categoryName, setCategoryName] = useState("");
     const [categoryDescription, setCategoryDescription] = useState("");
     const [newCategoryModalVisible, setNewCategoryModalVisible] = useState(false);
     const [createdCategory, setCreatedCategory] = useState({ value: "Select a Category", key: "1" }); // This is the default option for the SelectList component, which is the first option in the data array [see below
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [dateSelected, setDateSelected] = useState(false);
 
     const showNewCategoryModal = () => setNewCategoryModalVisible(true);
     const hideNewCategoryModal = () => setNewCategoryModalVisible(false);
@@ -53,17 +57,18 @@ export default function Modal() {
 
     const handleAddExpense = async () => {
         const cleanedAmount = parseFloat(amount.replace(/[^0-9.]/g, '')) || 0.00;
-
+        console.log("Date: ", date)
         const expense = {
             title,
             description,
             amount: cleanedAmount,
-            date,
+            date: Timestamp.fromDate(date),
             category: selectedCategory, // use the ID directly
             userId: auth.currentUser.uid,
         };
         try {
             appAddExpense(expense);
+            setDateSelected(false);
             navigation.goBack();
         } catch (error) {
         }
@@ -116,6 +121,11 @@ export default function Modal() {
     
         return formatted;
     }
+
+    const formatDate = (date) => {
+        // Example format: Jan 1, 2023
+        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    };
     
     
     
@@ -157,14 +167,28 @@ export default function Modal() {
                     onSubmitEditing={() => dateInputRef.current && dateInputRef.current.focus()}
                     returnKeyType="next"
                 />
-                <PrimaryTextInput
-                    ref={dateInputRef}
-                    label="Date"
-                    value={date}
-                    onChangeText={setDate}
-                    onSubmitEditing={() => categoryInputRef.current && categoryInputRef.current.focus()}
-                    returnKeyType="next"
-                />
+                <Button
+                    mode="outlined"
+                    style={{backgroundColor: theme.colors.tertiary, color: theme.colors.onTertiaryContainer, marginTop: 10}}
+                    textColor="black"
+                    onPress={() => setShowDatePicker(true)} icon="calendar"
+                    >
+                    {dateSelected ? formatDate(date) : "Select Date"}
+                </Button>
+                {showDatePicker && (
+                    <DateTimePicker 
+                        value={date}
+                        mode="date"
+                        display="default"
+                        onChange={(event, selectedDate) => {
+                            setShowDatePicker(false);
+                            const currentDate = selectedDate || date;
+                            setDate(currentDate);
+                            setDateSelected(true);
+                             // Hide the DateTimePicker after selecting a date
+                        }}
+                    />
+                )}
                 <SelectList 
                     defaultOption={createdCategory}
                     setSelected={(val) => {
