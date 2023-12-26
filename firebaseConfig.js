@@ -83,5 +83,30 @@ export const getUserCategories = async (uid) => {
     }
 };
 
+export const addBudget = async (category) => {
+    try {
+        const docRef = await addDoc(collection(db, "budgets"), category);
+        return docRef.id;
+    } catch (error) {
+        console.log(error.message);
+        return null;
+    }
+};
+
+export const getUserBudgets = async (uid) => {
+    try {
+        const q = query(collection(db, "budgets"), where("userId", "==", uid));
+        const querySnapshot = await getDocs(q);
+        let budgets = [];
+        querySnapshot.forEach((doc) => {
+            budgets.push({ id: doc.id, ...doc.data() });
+        });
+        return budgets;
+    } catch (error) {
+        console.log(error.message);
+        return [];
+    }
+};
+
 
 export default app;

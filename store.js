@@ -6,14 +6,15 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory, updateExpense } from "./firebaseConfig";
+import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory, updateExpense, addBudget, getUserBudgets } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
   initialized: false,
   user: null,
   expenses: [],
-  categories: []
+  categories: [],
+  budgets: [],
 });
 
 const unsub = onAuthStateChanged(auth, async (user) => {
@@ -38,6 +39,14 @@ const unsub = onAuthStateChanged(auth, async (user) => {
       });
     } catch (e) {
       console.log("Error getting user categories: ", e);
+    }
+    try {
+      const budgets = await getUserBudgets(user.uid);
+      AuthStore.update((store) => {
+        store.budgets = budgets;
+      });
+    } catch (e) {
+      console.log("Error getting user budgets: ", e);
     }
   }
 });
@@ -148,6 +157,18 @@ export const appAddCategory = async (category) => {
     const id = await addCategory(category);
     AuthStore.update((store) => {
       store.categories.push({ userId: store.user.uid, id: id, ...category });
+    });
+    return { id };
+  } catch (e) {
+    return { error: e };
+  }
+};
+
+export const appAddBudget = async (budget) => {
+  try {
+    const id = await addBudget(budget);
+    AuthStore.update((store) => {
+      store.categories.push({ userId: store.user.uid, id: id, ...budget });
     });
     return { id };
   } catch (e) {
