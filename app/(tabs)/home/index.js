@@ -3,10 +3,10 @@ import { BottomNavigation, Text, useTheme } from 'react-native-paper';
 import SettingsScreen from './settings';
 import TrendsScreen from './trends';
 import BudgetsScreen from './budgets';
-import DashboardScreen from './dashboard';
+import ExpensesScreen from './expenses';
 
 
-const DashboardRoute = () => <DashboardScreen />;
+const ExpensesRoute = () => <ExpensesScreen />;
 
 const BudgetsRoute = () => <BudgetsScreen />;
 
@@ -18,14 +18,14 @@ const MainApp = () => {
   const theme = useTheme();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'dashboard', title: 'Dashboard', focusedIcon: 'home', unfocusedIcon: 'home-outline'},
+    { key: 'expenses', title: 'Expenses', focusedIcon: 'home', unfocusedIcon: 'home-outline'},
     { key: 'budgets', title: 'Budgets', focusedIcon: 'wallet', unfocusedIcon: 'wallet-outline' },
     { key: 'trends', title: 'Trends', focusedIcon: 'chart-areaspline', unfocusedIcon: 'chart-line' },
     { key: 'settings', title: 'Settings', focusedIcon: 'cog', unfocusedIcon: 'cog-outline' },
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
-    dashboard: DashboardRoute,
+    expenses: ExpensesRoute,
     budgets: BudgetsRoute,
     trends: TrendsRoute,
     settings: SettingsRoute,

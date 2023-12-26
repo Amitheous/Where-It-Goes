@@ -7,7 +7,8 @@ import { auth } from "../../../firebaseConfig";
 import { updateNewExpenses } from "../../../store";
 import { update } from "pullstate";
 
-export default function DashboardScreen() {
+export default function ExpensesScreen() {
+  //TODO: Render expense history here, as well as having a welcome card similar to the one existing in the budgets screen to prompt the user to create their first expense
   const navigation = useNavigation();
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -40,18 +41,18 @@ export default function DashboardScreen() {
 
   const handleViewExpenseHistory = () => {
     updateNewExpenses(auth.currentUser);
-    navigation.navigate("expenseHistoryScreen");
+    navigation.navigate("subScreens/expenseHistoryScreen");
   };
 
   const handleAddNewExpense = () => {
-    navigation.navigate("addNewExpenseScreen");
+    navigation.navigate("subScreens/addNewExpenseScreen");
   };
 
   return (
     <View style={{ flex: 1 }}>
       <StatusBar style="light" />
       <Appbar.Header style={styles.header} >
-        <Appbar.Content title="Dashboard" titleStyle={styles.headerContent}/>
+        <Appbar.Content title="Expenses" titleStyle={styles.headerContent}/>
       </Appbar.Header>
       <Card>
         <PrimaryButton buttonStyle={{width: "100%"}} text="View Expense History" onPress={handleViewExpenseHistory} />

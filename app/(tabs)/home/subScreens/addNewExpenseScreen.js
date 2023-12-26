@@ -1,17 +1,17 @@
 import { View, StyleSheet } from "react-native";
 import {  useNavigation } from "expo-router";
 import { Appbar, Button, useTheme, Portal, Modal as RNPModal } from "react-native-paper";
-import PrimaryTextInput from "../../components/primaryTextInput"
-import { AuthStore, appAddExpense, appAddCategory } from "../../../store";
+import PrimaryTextInput from "../../../components/primaryTextInput"
+import { AuthStore, appAddExpense, appAddCategory } from "../../../../store";
 import { useStoreState } from "pullstate";
 import { useState, useRef } from "react";
-import { auth } from "../../../firebaseConfig";
+import { auth } from "../../../../firebaseConfig";
 import { SelectList } from "react-native-dropdown-select-list";
 import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Timestamp } from "firebase/firestore"
 
-export default function Modal() {
+export default function AddNewExpenseScreen() {
     const categories = useStoreState(AuthStore, (s) => s.categories);
     const navigation = useNavigation();
     const theme = useTheme();

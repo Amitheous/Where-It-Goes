@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { Link, useNavigation } from "expo-router";
 import { Appbar, Card, Text, Button, useTheme, Divider, Portal, Modal as RNPModal } from "react-native-paper";
-import PrimaryTextInput from "../../components/primaryTextInput";
-import { AuthStore, appDeleteExpense, appUpdateExpense, appAddCategory } from "../../../store";
+import PrimaryTextInput from "../../../components/primaryTextInput";
+import { AuthStore, appDeleteExpense, appUpdateExpense, appAddCategory } from "../../../../store";
 import { useStoreState } from "pullstate";
 import { SelectList } from "react-native-dropdown-select-list";
 import { MaterialIcons } from '@expo/vector-icons';
-import { auth } from "../../../firebaseConfig";
+import { auth } from "../../../../firebaseConfig";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Timestamp } from "firebase/firestore"
 
@@ -49,9 +49,11 @@ export default function ExpenseHistory() {
   const styles = StyleSheet.create({
     header: {
       backgroundColor: theme.colors.secondaryContainer,
+      fontFamily: "Montserrat_400Regular",
     },
     headerContent: {
       color: theme.colors.secondary,
+      fontFamily: "Montserrat_400Regular",
     },
     card: {
       backgroundColor: theme.colors.tertiaryContainer,
@@ -189,14 +191,17 @@ export default function ExpenseHistory() {
   };
 
   const loadMoreData = () => {
-    const newData = expenses.slice(0, page * 40);
-    setData(newData);
+    const sortedExpenses = expenses
+      .slice(0, page * 40)
+      .sort((a, b) => b.date.toDate() - a.date.toDate()); // Sort by date, newest first
+  
+    setData(sortedExpenses);
     setPage(page + 1);
   };
-
+  
   useEffect(() => {
     loadMoreData();
-  }, []);
+  }, [expenses]); // Add expenses as a dependency
 
   function formatCurrencyInput(value) {
     // Remove all non-digit characters except the decimal point
@@ -239,6 +244,7 @@ const formatDate = (date) => {
         )}
       />
       <Card.Content >
+        <Text style={styles.cardText}>Date: {formatDate(item.date.toDate())}</Text>
         <Text style={styles.cardText}>
           Amount: ${item.amount.toLocaleString("en-US", {
             minimumFractionDigits: 2,
@@ -262,7 +268,7 @@ const formatDate = (date) => {
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <Appbar.Header style={styles.header}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title="Expense History" />
+        <Appbar.Content title="Expense History" titleStyle={styles.headerContent} />
       </Appbar.Header>
       <Divider style={{marginVertical: 1, height: 0}} />
       <FlatList
@@ -305,6 +311,7 @@ const formatDate = (date) => {
                 {showDatePicker && (
                   <DateTimePicker
                     value={currentExpenseDate || new Date()}
+                    
                     mode="date"
                     display="default"
                     onChange={(event, selectedDate) => {
