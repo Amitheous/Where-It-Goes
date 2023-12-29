@@ -10,7 +10,7 @@ const db = initializeFirestore(app, { experimentalForceLongPolling: true, useFet
 
 
 export const auth = initializeAuth(app, {
-    persistence : getReactNativePersistence(AsyncStorage)
+    persistence: getReactNativePersistence(AsyncStorage)
 });
 
 export const getUserExpenses = async (uid) => {
@@ -105,6 +105,16 @@ export const getUserBudgets = async (uid) => {
     } catch (error) {
         console.log(error.message);
         return [];
+    }
+};
+
+export const deleteBudget = async (budgetId) => {
+    try {
+        await deleteDoc(doc(db, "budgets", budgetId));
+        return true;
+    } catch (error) {
+        console.log(error.message);
+        return false;
     }
 };
 

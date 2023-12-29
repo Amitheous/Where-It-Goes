@@ -6,7 +6,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory, updateExpense, addBudget, getUserBudgets } from "./firebaseConfig";
+import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory, updateExpense, addBudget, getUserBudgets, deleteBudget } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
@@ -168,12 +168,27 @@ export const appAddBudget = async (budget) => {
   try {
     const id = await addBudget(budget);
     AuthStore.update((store) => {
-      store.categories.push({ userId: store.user.uid, id: id, ...budget });
+      store.budgets.push({ userId: store.user.uid, id: id, ...budget });
     });
     return { id };
   } catch (e) {
     return { error: e };
   }
 };
+
+export const appDeleteBudget = async (budgetId) => {
+  try {
+    const success = await deleteBudget(budgetId);
+    if (success) {
+      const newBudgets = AuthStore.useState((s) => s.budgets.filter((budget) => budget.id !== budgetId));
+      AuthStore.update((s) => {
+        s.budgets = newBudgets;
+      });
+    }
+    return { success };
+  } catch (e) {
+    return { error: e };
+  }
+}
 
 registerInDevtools({ AuthStore });
