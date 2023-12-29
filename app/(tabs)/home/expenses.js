@@ -14,7 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Timestamp } from "firebase/firestore"
 
 export default function ExpensesScreen() {
-  const expenses = useStoreState(AuthStore, (s) => s.expenses);
+  const expenses = useStoreState(AuthStore, (s) => s.expenses).sort((a, b) => b.date.toDate() - a.date.toDate());
   const categories = useStoreState(AuthStore, (s) => s.categories);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -44,7 +44,6 @@ export default function ExpensesScreen() {
   const [dateSelected, setDateSelected] = useState(false);
   const [dateChanged, setDateChanged] = useState(false);
 
-  //TODO: Render expense history here, as well as having a welcome card similar to the one existing in the budgets screen to prompt the user to create their first expense
   const navigation = useNavigation();
   const theme = useTheme();
   const styles = StyleSheet.create({
@@ -73,12 +72,39 @@ export default function ExpensesScreen() {
       width: 70,
       height: 70,
     },
+    modalContainer: {
+      backgroundColor:
+        theme.colors.background,
+      borderRadius: 10,
+      marginHorizontal: 10,
+    },
+    modalEntries: {
+      width: "90%",
+      marginBottom: 16,
+    },
+    modalForm: {
+      justifyContent: "center",
+      alignItems: "center",
+      paddingVertical: 20
+    },
+    button: {
+      marginTop: 16,
+      backgroundColor: theme.colors.primary,
+    },
+    cancelButton: {
+      marginTop: 16,
+      backgroundColor: theme.colors.error
+    },
+    categoryForm: {
+      justifyContent: "center",
+      alignItems: "center",
+      paddingVertical: 20
+    },
   });
   const dataForUpdate = [{ value: "Create A New Category", key: "new_category" }, ...categories.map((category) => ({ value: category.name, key: category.id }))];
 
 
   function formatCurrencyInput(value) {
-    // Remove all non-digit characters except the decimal point
     let formatted = value.replace(/[^0-9.]/g, '');
     if (formatted.includes('.')) {
       let parts = formatted.split('.');
@@ -89,27 +115,6 @@ export default function ExpensesScreen() {
 
       formatted = parts[0] + '.' + parts[1];
     }
-    // Add commas every 3 digits before the decimal point
-    formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-
-
-
-    return formatted;
-  }
-
-  function formatCurrencyInput(value) {
-    // Remove all non-digit characters except the decimal point
-    let formatted = value.replace(/[^0-9.]/g, '');
-    if (formatted.includes('.')) {
-      let parts = formatted.split('.');
-
-      if (parts[1].length > 2) {
-        parts[1] = parts[1].substring(0, 2);
-      }
-
-      formatted = parts[0] + '.' + parts[1];
-    }
-    // Add commas every 3 digits before the decimal point
     formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
 
@@ -150,7 +155,7 @@ export default function ExpensesScreen() {
       category: selectedUpdateCategory,
     };
 
-
+    // May want to adjust this so that there is a re-render to resort the expenses to stay in order by date
     try {
       const success = await appUpdateExpense(currentExpenseId, updatedExpense);
       if (success) {
@@ -216,6 +221,28 @@ export default function ExpensesScreen() {
   const formatDate = (date) => {
     // Example format: Jan 1, 2023
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+  };
+
+  const handleOpenExpenseEditor = (expenseId) => {
+    const expense = expenses.find(e => e.id === expenseId);
+    if (expense) {
+      setCurrentExpenseId(expenseId);
+      setCurrentExpenseTitle(expense.title);
+      setCurrentExpenseDescription(expense.description);
+      setCurrentExpenseAmount(expense.amount.toString());
+      setCurrentExpenseDate(expense.date.toDate());
+      setDateChanged(false);
+
+      // Find the category object
+      const categoryObject = categories.find(cat => cat.id === expense.category);
+      if (categoryObject) {
+        setCurrentExpenseCategory({ key: categoryObject.id, value: categoryObject.name });
+      } else {
+        setCurrentExpenseCategory(null);
+      }
+
+      setEditExpenseModalVisible(true);
+    }
   };
 
 
