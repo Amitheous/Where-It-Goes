@@ -118,5 +118,15 @@ export const deleteBudget = async (budgetId) => {
     }
 };
 
+export const updateBudget = async (budgetId, budget) => {
+    try {
+        await updateDoc(doc(db, "budgets", budgetId), budget);
+        return true;
+    } catch (error) {
+        console.log(error.message);
+        return false;
+    }
+}
+
 
 export default app;

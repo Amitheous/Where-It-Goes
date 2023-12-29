@@ -6,7 +6,7 @@ import {
   signOut,
   updateProfile,
 } from "firebase/auth/react-native";
-import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory, updateExpense, addBudget, getUserBudgets, deleteBudget } from "./firebaseConfig";
+import { app, auth, getUserExpenses, addExpense, getUserCategories, deleteExpense, addCategory, updateExpense, addBudget, getUserBudgets, deleteBudget, updateBudget } from "./firebaseConfig";
 
 export const AuthStore = new Store({
   isLoggedIn: false,
@@ -160,6 +160,7 @@ export const appUpdateExpense = async (expenseId, expense) => {
     return { error: e };
   }
 }
+
 export const appAddCategory = async (category) => {
   try {
     const id = await addCategory(category);
@@ -189,6 +190,29 @@ export const appDeleteBudget = async (budgetId) => {
     const success = await deleteBudget(budgetId);
     if (success) {
       const newBudgets = AuthStore.useState((s) => s.budgets.filter((budget) => budget.id !== budgetId));
+      AuthStore.update((s) => {
+        s.budgets = newBudgets;
+      });
+    }
+    return { success };
+  } catch (e) {
+    return { error: e };
+  }
+}
+
+export const appUpdateBudget = async (budgetId, budget) => {
+  try {
+    const success = await updateBudget(budgetId, budget);
+    if (success) {
+      const newBudgets = AuthStore.useState((s) =>
+        s.budgets
+          .map((b) => {
+            if (b.id === budgetId) {
+              return { ...b, ...budget };
+            }
+            return b;
+          })
+      );
       AuthStore.update((s) => {
         s.budgets = newBudgets;
       });
