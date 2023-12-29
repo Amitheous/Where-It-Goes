@@ -11,16 +11,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Timestamp } from "firebase/firestore"
 
-// TODO: Adjust this to be handling budgets instead of expenses,
-// and adjust the UI accordingly
-// and make it with the following considerations:
-// 1. The user should be able to select a category from a dropdown menu of exiting categories (or create a new one)
-// 2. The user will select whether the budget is recurring or a one time budget
-// 3. Depending on which is selected, the user will be prompted to either select a start and end date, or a recurring frequency (daily, weekly, monthly, yearly)
-// 4. The user will input a budget amount
-// 5. The user will be able to add a description
-// 6. The user will be able to add a title
-// 7. The user will be able to set up a reminder (future feature)
+// Future features:
+// The user will be able to set up a notification for when they are close to reaching their budget limit
+// Or a recurring notification of their current budget usage
+
 
 export default function AddNewBudgetScreen() {
     const categories = useStoreState(AuthStore, (s) => s.categories);
