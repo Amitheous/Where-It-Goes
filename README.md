@@ -23,6 +23,7 @@ This document outlines the development roadmap and versioning plan for Where It 
 ### Version 0.4.0 - Basic Budgeting
 - Add Budget feature.
 - View Budgets.
+- Editing Existing Budgets.
 
 ### Version 0.5.0 - Basic Dashboard and Trends
 - Basic Dashboard implementation.
@@ -45,9 +46,10 @@ This document outlines the development roadmap and versioning plan for Where It 
 - Basic Security Features.
 - Testing and Bug Fixes.
 - Prepare Documentation.
+- Export Data.
 
 ## Post-MVP Features
-- Export Data.
+
 - Receipt Scanning.
 - Interactive Dashboards.
 - Custom Categories and Tagging.
