@@ -6,17 +6,19 @@ export default function TrendsScreen() {
   const theme = useTheme();
   const styles = StyleSheet.create({
     header: {
-      backgroundColor: theme.colors.primary,
+      backgroundColor: theme.colors.secondaryContainer,
+      fontFamily: 'Montserrat_400Regular',
     },
     headerContent: {
-      color: theme.colors.secondary,
+      color: theme.colors.onSecondaryContainer,
+      fontFamily: 'Montserrat_400Regular',
     },
   });
-  
+
   return (
     <View style={{ flex: 1 }}>
       <Appbar.Header style={styles.header} >
-        <Appbar.Content title="Trends"/>
+        <Appbar.Content titleStyle={styles.headerContent} title="Trends" />
       </Appbar.Header>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Trends Screen</Text>
