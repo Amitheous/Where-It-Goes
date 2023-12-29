@@ -27,6 +27,11 @@ const unsub = onAuthStateChanged(auth, async (user) => {
     try {
       const expenses = await getUserExpenses(user.uid);
       AuthStore.update((store) => {
+        //sort expenses newest to oldest when updating store
+        expenses.sort((a, b) => {
+          return b.date - a.date;
+        }
+        );
         store.expenses = expenses;
       });
     } catch (e) {
@@ -136,12 +141,16 @@ export const appUpdateExpense = async (expenseId, expense) => {
   try {
     const success = await updateExpense(expenseId, expense);
     if (success) {
-      const newExpenses = AuthStore.useState((s) => s.expenses.map((e) => {
-        if (e.id === expenseId) {
-          return { ...e, ...expense };
-        }
-        return e;
-      }));
+      const newExpenses = AuthStore.useState((s) =>
+        s.expenses
+          .map((e) => {
+            if (e.id === expenseId) {
+              return { ...e, ...expense };
+            }
+            return e;
+          })
+          .sort((a, b) => b.date - a.date) // Sort expenses from newest to oldest
+      );
       AuthStore.update((s) => {
         s.expenses = newExpenses;
       });
@@ -151,7 +160,6 @@ export const appUpdateExpense = async (expenseId, expense) => {
     return { error: e };
   }
 }
-
 export const appAddCategory = async (category) => {
   try {
     const id = await addCategory(category);
