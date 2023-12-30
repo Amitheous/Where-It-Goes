@@ -37,9 +37,10 @@ This document outlines the development roadmap and versioning plan for Where It 
 - Search functionality.
 - Filter functionality.
 
-### Version 0.8.0 - Notifications and Recurring Expenses
+### Version 0.8.0 - Notifications and Enhanced Expenses/Budgets
 - Notifications and reminders.
-- Recurring Expenses feature.
+- Recurring Expenses.
+- One-time budgets, recurring budgets of varying time periods.
 
 ### Version 0.9.0 - MVP Release for Beta Testing
 - Cloud Synchronization.
