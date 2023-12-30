@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import { Link, useNavigation } from "expo-router";
 import { Appbar, useTheme, Card, Text, IconButton, Button, Portal, Modal as RNPModal } from "react-native-paper";
@@ -14,7 +14,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Timestamp } from "firebase/firestore"
 
 export default function ExpensesScreen() {
-  const expenses = useStoreState(AuthStore, (s) => s.expenses).sort((a, b) => b.date.toDate() - a.date.toDate());
+  const expensesFromStore = useStoreState(AuthStore, (s) => s.expenses);
+  const expenses = useMemo(() => {
+    return [...expensesFromStore].sort((a, b) => b.date.toDate() - a.date.toDate());
+  }, [expensesFromStore]);
+
   const categories = useStoreState(AuthStore, (s) => s.categories);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -58,6 +62,7 @@ export default function ExpensesScreen() {
     card: {
       backgroundColor: theme.colors.tertiaryContainer,
       fontFamily: 'Montserrat_400Regular',
+      marginTop: 3
     },
     cardText: {
       color: theme.colors.onTertiaryContainer,
@@ -121,11 +126,6 @@ export default function ExpensesScreen() {
 
     return formatted;
   }
-
-  const handleViewExpenseHistory = () => {
-    updateNewExpenses(auth.currentUser);
-    navigation.navigate("subScreens/expenseHistoryScreen");
-  };
 
   const loadMoreData = () => {
     const sortedExpenses = expenses
@@ -287,7 +287,6 @@ export default function ExpensesScreen() {
       <Appbar.Header style={styles.header} >
         <Appbar.Content title="Expenses" titleStyle={styles.headerContent} />
       </Appbar.Header>
-      {/* Add in expense history here */}
       <FlatList
         data={data}
         renderItem={renderExpenseItem}

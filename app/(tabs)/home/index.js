@@ -18,9 +18,9 @@ const MainApp = () => {
   const theme = useTheme();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: 'expenses', title: 'Expenses', focusedIcon: 'home', unfocusedIcon: 'home-outline'},
-    { key: 'budgets', title: 'Budgets', focusedIcon: 'wallet', unfocusedIcon: 'wallet-outline' },
     { key: 'trends', title: 'Trends', focusedIcon: 'chart-areaspline', unfocusedIcon: 'chart-line' },
+    { key: 'budgets', title: 'Budgets', focusedIcon: 'wallet', unfocusedIcon: 'wallet-outline' },
+    { key: 'expenses', title: 'Expenses', focusedIcon: 'home', unfocusedIcon: 'home-outline' },
     { key: 'settings', title: 'Settings', focusedIcon: 'cog', unfocusedIcon: 'cog-outline' },
   ]);
 
@@ -33,7 +33,7 @@ const MainApp = () => {
 
   return (
     <BottomNavigation
-    theme={{colors: {secondaryContainer: theme.colors.primaryContainer}}}
+      theme={{ colors: { secondaryContainer: theme.colors.primaryContainer } }}
       navigationState={{ index, routes }}
       onIndexChange={setIndex}
       renderScene={renderScene}
