@@ -45,7 +45,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-web": "~0.18.7",
     "victory-native": "36.7.0",
-    "react-native-svg": "13.4.0"
+    "react-native-svg": "13.4.0",
+    "@react-native-picker/picker": "2.4.8"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",
@@ -72,6 +73,6 @@
     ]
   },
   "name": "where-it-goes",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "private": false
 }
