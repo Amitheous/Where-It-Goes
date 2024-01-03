@@ -1,7 +1,7 @@
 # Expense Tracker App
 
 ## Overview
-This document outlines the development roadmap and versioning plan for Where It Goes, an expense tracking app for Android and iOS. (Initial Development is focused on Android, as that is what I have avaialble for testing.)
+This document outlines the development roadmap and versioning plan for Where It Goes, an expense tracking app for Android and iOS. (Initial Development is focused on Android, as that is what I have available for testing.)
 
 ## Development Roadmap
 
