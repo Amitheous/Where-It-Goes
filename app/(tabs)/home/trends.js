@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { View, StyleSheet, Dimensions } from "react-native";
+import React, { useState, useRef, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, Animated, PanResponder, TouchableOpacity } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Appbar, Text, useTheme, Card, IconButton, Modal, Button, Portal } from "react-native-paper";
 import { useStoreState } from "pullstate";
@@ -25,6 +25,67 @@ export default function TrendsScreen() {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [pickerVisible, setPickerVisible] = useState(false);
+
+  const slideAnimation = useRef(new Animated.Value(0)).current;
+  const fadeAnimation = useRef(new Animated.Value(1)).current;
+
+  const slideOutIn = (direction) => {
+    // Slide out and fade out
+    Animated.parallel([
+      Animated.timing(slideAnimation, {
+        toValue: direction === 'left' ? 50 : -50,
+        duration: 150,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnimation, {
+        toValue: 0, // fade out
+        duration: 150,
+        useNativeDriver: true,
+      })
+    ]).start(() => {
+      direction === 'left' ? goToPreviousMonth() : goToNextMonth();
+
+      // Reset slide position without animation
+      slideAnimation.setValue(direction === 'left' ? -50 : 50);
+
+      // Slide in and fade in
+      Animated.parallel([
+        Animated.timing(slideAnimation, {
+          toValue: 0, // slide in to original position
+          duration: 150,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnimation, {
+          toValue: 1, // fade in
+          duration: 150,
+          useNativeDriver: true,
+        })
+      ]).start();
+    });
+  };
+
+  const panResponder = useRef(PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onPanResponderGrant: (evt, gestureState) => {
+      this.touchStart = Date.now();
+    },
+    onPanResponderRelease: (evt, gestureState) => {
+      const touchDuration = Date.now() - this.touchStart;
+      const { dx } = gestureState;
+
+      // Check if it's a tap \ or swipe
+      if (touchDuration < 250 && Math.abs(dx) < 5) {
+        setPickerVisible(true);
+      } else {
+        // Handle swipes
+        if (dx > 50) {
+          slideOutIn('left');
+        } else if (dx < -50) {
+          slideOutIn('right');
+        }
+      }
+    },
+  })).current;
 
   const currentMonthExpenses = expenses.filter(expense => {
     const expenseDate = expense.date.toDate(); // Convert Firestore Timestamp to JS Date
@@ -56,7 +117,7 @@ export default function TrendsScreen() {
       backgroundColor: theme.colors.surface,
       fontFamily: 'Montserrat_400Regular',
       width: "100%",
-      alignContent: "center",
+      justifyContent: "center"
     },
     pickerStyle: {
       height: 50,
@@ -77,7 +138,6 @@ export default function TrendsScreen() {
   filteredExpenses.forEach(expense => {
     const category = categories.find(cat => cat.id === expense.category);
     if (!category) {
-      // console.warn("Category not found for expense:", expense);
       return;
     }
 
@@ -91,13 +151,12 @@ export default function TrendsScreen() {
     expensesByCategory[categoryName] += expenseAmount;
   });
 
-  const colors = [theme.colors.primary, theme.colors.errorContainer, theme.colors.tertiary, theme.colors.onPrimary, theme.colors.error, theme.colors.onError, theme.colors.onBackground, "#800080", "#008000", "#000080"];
+  const colors = [theme.colors.inversePrimary, theme.colors.tertiary, theme.colors.onPrimary, theme.colors.primary, theme.colors.error, theme.colors.inverseSurface, theme.colors.onBackground, "#800080", "#008000", "#000080"];
 
   //format currency to handle commas and decimals
   const formatCurrency = (amount) => {
     return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
   }
-
 
   const chartData = Object.keys(expensesByCategory).map((category, index) => ({
     x: category,
@@ -121,6 +180,28 @@ export default function TrendsScreen() {
     { value: "December", key: 11 },
   ]
 
+  const goToPreviousMonth = () => {
+    setSelectedMonth(prevMonth => {
+      if (prevMonth === 0) {
+        setSelectedYear(prevYear => prevYear - 1);
+        return 11; // December of the previous year
+      } else {
+        return prevMonth - 1;
+      }
+    });
+  };
+
+  const goToNextMonth = () => {
+    setSelectedMonth(prevMonth => {
+      if (prevMonth === 11) {
+        setSelectedYear(prevYear => prevYear + 1);
+        return 0; // January of the next year
+      } else {
+        return prevMonth + 1;
+      }
+    });
+  };
+
   const pickerYears = Array.from({ length: 17 }, (_, index) => currentYear - 15 + index);
 
   return (
@@ -131,10 +212,7 @@ export default function TrendsScreen() {
           transparent={true}
           visible={pickerVisible}
           onDismiss={() => setPickerVisible(false)}
-
-
         >
-
           <View style={{ margin: 20, paddingBottom: 20, paddingTop: 10, backgroundColor: theme.colors.primaryContainer, borderRadius: 10, padding: 0, alignItems: 'center' }}>
             <Picker
               selectedValue={selectedMonth}
@@ -164,29 +242,43 @@ export default function TrendsScreen() {
               <Text style={{ color: theme.colors.onPrimary, fontFamily: "Montserrat_700Bold" }}>Done</Text>
             </Button>
           </View>
-
         </Modal>
       </Portal>
       <Appbar.Header style={styles.header} >
         <Appbar.Content titleStyle={styles.headerContent} title="Trends" />
       </Appbar.Header>
-
+      <Card style={styles.card}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '80%', alignSelf: "center" }}>
+          <View style={{ flex: 1, alignItems: 'flex-start', justifyContent: 'center', left: 10 }}>
+            <MaterialIcons name="arrow-left" size={26} color={theme.colors.onPrimaryContainer} onPress={() => slideOutIn('left')} />
+          </View>
+          <Animated.View style={{ flex: 3, width: "100%", alignItems: 'center', justifyContent: 'center', height: 50, transform: [{ translateX: slideAnimation }], opacity: fadeAnimation }} {...panResponder.panHandlers}>
+            <Card.Title
+              title={`${months.find(month => month.key === selectedMonth).value} ${selectedYear}`}
+              titleStyle={{ fontSize: 16, fontFamily: "Montserrat_400Regular", textAlign: "center", textAlignVertical: "center" }}
+              style={{ justifyContent: 'center', width: '100%' }}
+            />
+          </Animated.View>
+          <View style={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center', right: 10 }}>
+            <MaterialIcons name="arrow-right" size={26} color={theme.colors.onPrimaryContainer} onPress={() => slideOutIn('right')} />
+          </View>
+        </View>
+      </Card>
       <Card style={styles.card}>
         <View>
           <Card.Title
             title={`${months.find(month => month.key === selectedMonth).value} ${selectedYear} Expenses`}
             subtitle={`Total: ${formatCurrency(filteredExpenses.reduce((acc, expense) => acc + parseFloat(expense.amount), 0))}`}
-            titleStyle={{ textAlign: "left", fontSize: 16, fontFamily: "Montserrat_400Regular", width: "100%" }}
-            subtitleStyle={{ textAlign: "left" }}
-            right={(props) => <IconButton {...props} icon="menu-down" onPress={() => setPickerVisible(true)} />}
-            rightStyle={{ right: "100%" }}
+            titleStyle={{ textAlign: "center", fontSize: 16, fontFamily: "Montserrat_400Regular", width: "100%" }}
+            subtitleStyle={{ textAlign: "center" }}
+            style={{ marginBottom: 10 }}
           />
         </View>
-
         <VictoryPie
           data={chartData}
           colorScale={colors}
           containerComponent={<VictoryContainer responsive={true} />}
+
           style={{
             data: {
               fill: ({ datum }) => {
@@ -231,7 +323,6 @@ export default function TrendsScreen() {
 
         />
       </Card>
-
     </View >
   );
 }
