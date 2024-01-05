@@ -10,7 +10,11 @@
       },
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "APP_ICON": "./assets/images/PlaceholderIcon.png",
+        "APP_NAME": "Where It Goes"
+      }
     },
     "preview": {
       "distribution": "internal",
