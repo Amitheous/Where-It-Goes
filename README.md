@@ -8,7 +8,7 @@ npx expo start --dev-client | starts dev server for dev-client build (better per
 Will want to have an android emulator set up, I did setup through android studio. If emulator is setup and paths are configured properly, you can just press a after server is running to open the app in the emulator.
 
 ## Pain Points
-- Learning how to build apk. Expo recommends eas, but despite dev-client builds working fine, I was having issues with production builds. Instead I ended up using npx expo export -p android, then building the apk through android studio just for testing, which worked fine, but am hoping to find a more consistent CI solution moving forward
+- Learning how to build apk. Expo recommends eas, but despite dev-client builds working fine, I was having issues with production builds. Instead I ended up using npx expo export -p android, then building the apk through android studio using ./gradlew assembleRelease from the android folder just for testing, which worked fine, but am hoping to find a more consistent CI solution moving forward
 
 ## Overview
 This document outlines the development roadmap and versioning plan for Where It Goes, an expense tracking app for Android and iOS. (Initial Development is focused on Android, as that is what I have available for testing.)
