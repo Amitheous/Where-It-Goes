@@ -12,7 +12,8 @@
       }
     },
     "android": {
-      "package": "com.amitheous.whereitgoes"
+      "package": "com.amitheous.whereitgoes",
+      "icon": "./assets/images/icon.png"
     },
     "runtimeVersion": {
       "policy": "sdkVersion"

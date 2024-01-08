@@ -12,13 +12,24 @@
       "distribution": "internal",
       "channel": "development",
       "env": {
-        "APP_ICON": "./assets/images/PlaceholderIcon.png",
+        "APP_ICON": "./assets/images/icon.png",
         "APP_NAME": "Where It Goes"
       }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview"
+    },
+    "local": {
+      "distribution": "internal",
+      "channel": "local",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "APP_ICON": "./assets/images/icon.png",
+        "APP_NAME": "Where It Goes"
+      }
     },
     "production": {
       "channel": "production"
